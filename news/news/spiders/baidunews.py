@@ -31,6 +31,8 @@ class BaiduNewsSpider(scrapy.Spider):
                 publish_at = datetime.datetime.now() - datetime.timedelta(hours=hours)
             else:
                 publish_at = time_str.replace(u'年','-').replace(u'月','-').replace(u'日','')
-
-            if not News.objects.filter(url=url).count():
-                News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'百度新闻搜索',publish_at=publish_at)
+                publish_at = datetime.datetime.strptime(publish_at, "%Y-%m-%d %H:%M")
+            days = (datetime.datetime.now() - publish_at).days
+            if days < 1:
+                if not News.objects.filter(url=url).count():
+                    News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'百度新闻搜索',publish_at=publish_at)

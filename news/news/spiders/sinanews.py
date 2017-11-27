@@ -24,5 +24,8 @@ class SinaNewsSpider(scrapy.Spider):
                 title = c.xpath('h2/a').xpath('string(.)').extract_first()
                 text = c.xpath('h2/span[@class="fgray_time"]/text()').extract_first().split(' ')
                 publish_at = text[1]+' '+text[2]
-                if not News.objects.filter(url=url).count():
-                    News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'新浪新闻搜索',publish_at=publish_at)
+                publish_at = datetime.datetime.strptime(publish_at, "%Y-%m-%d %H:%M:%S")
+                days = (datetime.datetime.now() - publish_at).days
+                if days < 1:
+                    if not News.objects.filter(url=url).count():
+                        News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'新浪新闻搜索',publish_at=publish_at)
