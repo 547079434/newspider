@@ -15,9 +15,12 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url,include
+from django.views.static import serve
 import xadmin
 xadmin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', include(xadmin.site.urls)),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root':MEDIA_ROOT}),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root':STATIC_ROOT}),
 ]
