@@ -14,7 +14,7 @@ class SinaNewsSpider(scrapy.Spider):
             key_str = urllib.quote(key.name.encode('utf8'))
             url = 'http://www.gamelook.com.cn/?s=%s' % (key_str)
             yield scrapy.FormRequest(url=url, callback=self.parse, meta={'key':key})
-    
+
     def parse(self, response):
         for li in response.xpath('//*[@id="wrap"]/div/div/div/ul/li'):
             publish_at = li.xpath('div[2]/div[2]/span/text()').extract_first()
@@ -23,5 +23,5 @@ class SinaNewsSpider(scrapy.Spider):
             title = li.xpath('div[2]/h2/a/text()').extract_first().strip()
             days = (datetime.datetime.now() - publish_at).days
             if response.meta['key'].name in title and days < 1:
-                News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'gamelook搜索',publish_at=publish_at)
-                
+                if not News.objects.filter(url=url).count():
+                    News.objects.create(title=title,keys=response.meta['key'],url=url,content=u'gamelook搜索',publish_at=publish_at)
