@@ -17,7 +17,7 @@ class BaiduNewsSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_item,meta={'key':key})
 
     def parse_item(self, response):
-        content = response.xpath('//*[@id="content_left"]/div[2]//div[@class="result title"]')   
+        content = response.xpath('//*[@id="content_left"]/div[2]//div[@class="result title"]')
         for c in content:
             url = c.xpath('h3/a/@href').extract_first()
             title = c.xpath('h3/a').xpath('string(.)').extract_first()
@@ -30,7 +30,7 @@ class BaiduNewsSpider(scrapy.Spider):
                 hours = int(time_str.split(u'小时前')[0])
                 publish_at = datetime.datetime.now() - datetime.timedelta(hours=hours)
             else:
-                publish_at = time_str.replace(u'年','-').replace(u'月','-').replace(u'日','')
+                publish_at = time_str.replace(u'年','-').replace(u'月','-').replace(u'日','').replace('\n','').replace('\t','')
                 publish_at = datetime.datetime.strptime(publish_at, "%Y-%m-%d %H:%M")
             days = (datetime.datetime.now() - publish_at).days
             if days < 1:
